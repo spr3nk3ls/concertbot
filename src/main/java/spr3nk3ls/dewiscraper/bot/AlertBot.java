@@ -20,17 +20,17 @@ public class AlertBot {
 
     private final String botToken;
 
-    private final ConversationHandler conversationHandler;
+    private final QueryHandler queryHandler;
 
     @Getter
     private final InnerBot bot = new InnerBot();
 
     public AlertBot(@ConfigProperty(name = "bot.username") String botUsername,
                     @ConfigProperty(name = "bot.token") String botToken,
-                    ConversationHandler conversationHandler) {
+                    QueryHandler queryHandler) {
         this.botUsername = botUsername;
         this.botToken = botToken;
-        this.conversationHandler = conversationHandler;
+        this.queryHandler = queryHandler;
     }
 
     public void sendAlert(Long chatId, Beschikbaarheid beschikbaarheid) {
@@ -48,7 +48,7 @@ public class AlertBot {
         public void onUpdateReceived(Update update) {
             if (update.hasMessage() && update.getMessage().hasText()) {
                 Message message = update.getMessage();
-                String text = conversationHandler.handle(message);
+                String text = queryHandler.handle(message);
                 if (text == null) {
                     return;
                 }
