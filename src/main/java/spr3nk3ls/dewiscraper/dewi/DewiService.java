@@ -1,5 +1,6 @@
 package spr3nk3ls.dewiscraper.dewi;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.cache.CacheResult;
 import spr3nk3ls.dewiscraper.api.Beschikbaarheid;
@@ -17,6 +18,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -50,20 +52,29 @@ public class DewiService {
     @CacheResult(cacheName = "tijdsbloks")
     public List<Beschikbaarheid> getBeschikbaarheidForDay(LocalDate localDate) {
         try {
-            BlocksPage blocksPagePage = getDewiPageForDate(localDate);
-            int maxLeft = blocksPagePage.getMax_left();
-            return blocksPagePage.getBlocks().stream().map(block -> toBeschikbaarheid(maxLeft, localDate, block)).collect(Collectors.toList());
+            Optional<BlocksPage> blocksPagePage = getDewiPageForDate(localDate);
+            return blocksPagePage.map(page -> getBeschikbaarheids(localDate, page)).orElse(List.of());
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private BlocksPage getDewiPageForDate(LocalDate localDate) throws IOException, InterruptedException {
+    private List<Beschikbaarheid> getBeschikbaarheids(LocalDate localDate, BlocksPage blocksPagePage) {
+        int maxLeft = blocksPagePage.getMax_left();
+        return blocksPagePage.getBlocks().stream().map(block -> toBeschikbaarheid(maxLeft, localDate, block)).collect(Collectors.toList());
+    }
+
+    private Optional<BlocksPage> getDewiPageForDate(LocalDate localDate) throws IOException, InterruptedException {
         String dateForUri = localDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         URI uri = URI.create(DEWI_URL + "?" + AREA + "&date=" + dateForUri);
         HttpRequest httpRequest = HttpRequest.newBuilder(uri).GET().build();
         HttpResponse<String> response = this.httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-        return objectMapper.readValue(response.body(), BlocksPage.class);
+        try {
+            return Optional.of(objectMapper.readValue(response.body(), BlocksPage.class));
+        } catch (JsonProcessingException e) {
+            //Unable to process response
+            return Optional.empty();
+        }
     }
 
     private Beschikbaarheid toBeschikbaarheid(int maxLeft, LocalDate localDate, Block block) {
