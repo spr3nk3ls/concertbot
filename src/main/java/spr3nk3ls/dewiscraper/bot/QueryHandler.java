@@ -66,14 +66,11 @@ public class QueryHandler {
 
     private String formatTijdsblok(Beschikbaarheid beschikbaarheid){
         String info;
-        final var minBeschikbaar = beschikbaarheid.getMinBeschikbaar();
-        final var maxBeschikbaar = beschikbaarheid.getMaxBeschikbaar();
-        if(maxBeschikbaar == 0) {
+        final var beschikbaar = beschikbaarheid.getBeschikbaar();
+        if(beschikbaar == 0) {
             info = "bezet";
-        } else if (minBeschikbaar == 0){
-            info = String.format("vrij, minder dan %d beschikbaar", maxBeschikbaar);
         } else {
-            info = String.format("vrij, meer dan %d beschikbaar", minBeschikbaar);
+            info = String.format("vrij, %d beschikbaar", beschikbaar);
         }
         return String.format("%tR: %s", beschikbaarheid.getTijdsblok().getStarttijd(), info);
     }

@@ -86,16 +86,8 @@ public class DewiService {
         LocalDateTime startTijd = LocalDateTime.of(localDate, LocalTime.parse(block.getStart()));
         LocalDateTime eindTijd = LocalDateTime.of(localDate, LocalTime.parse(block.getEnd()));
         return Beschikbaarheid.builder()
-                .minBeschikbaar(block.getStatus().equals("free") ? GLOBAL_MAX_20 : 0)
-                .maxBeschikbaar(getMaxBeschikbaar(block.getStatus()))
+                .beschikbaar(block.getCapacity())
                 .tijdsblok(Tijdsblok.builder().starttijd(startTijd).eindtijd(eindTijd).build())
                 .build();
-    }
-
-    private int getMaxBeschikbaar(String status) {
-        if(status.equals("full")){
-            return 0;
-        }
-        return GLOBAL_MAX_20;
     }
 }

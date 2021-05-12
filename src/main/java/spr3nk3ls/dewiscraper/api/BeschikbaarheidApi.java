@@ -25,6 +25,6 @@ public class BeschikbaarheidApi {
     @Path("/beschikbaar")
     @Produces(MediaType.APPLICATION_JSON)
     public List<Beschikbaarheid> tijdsblokkenBeschikbaar(){
-        return dewiService.getBeschikbaarheid(tijdsblok -> tijdsblok.getMaxBeschikbaar() > 0);
+        return dewiService.getBeschikbaarheid(tijdsblok -> tijdsblok.getBeschikbaar() > 0);
     }
 }

@@ -45,7 +45,7 @@ public class AlertScheduler {
     private Consumer<Alert> sendAndRemoveAlert() {
         return alert -> {
             Beschikbaarheid beschikbaarheid = dewiService.getBeschikbaarheid(alert.getTijdsblok());
-            if(beschikbaarheid != null && beschikbaarheid.getMaxBeschikbaar() > 0) {
+            if(beschikbaarheid != null && beschikbaarheid.getBeschikbaar() > 0) {
                 alertBot.sendAlert(alert.getChatId(), beschikbaarheid);
                 alert.delete();
             }

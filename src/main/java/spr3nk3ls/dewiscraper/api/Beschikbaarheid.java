@@ -7,6 +7,5 @@ import lombok.Getter;
 @Getter
 public class Beschikbaarheid {
     private final Tijdsblok tijdsblok;
-    private final int maxBeschikbaar;
-    private final int minBeschikbaar;
+    private final int beschikbaar;
 }
