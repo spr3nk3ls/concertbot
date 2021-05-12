@@ -3,6 +3,7 @@ package spr3nk3ls.dewiscraper.dewi;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.cache.CacheResult;
+import lombok.extern.slf4j.Slf4j;
 import spr3nk3ls.dewiscraper.api.Beschikbaarheid;
 import spr3nk3ls.dewiscraper.api.Tijdsblok;
 
@@ -23,6 +24,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Slf4j
 @ApplicationScoped
 public class DewiService {
 
@@ -68,12 +70,14 @@ public class DewiService {
     private Optional<BlocksPage> getDewiPageForDate(LocalDate localDate) throws IOException, InterruptedException {
         String dateForUri = localDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         URI uri = URI.create(DEWI_URL + "?" + AREA + "&" + PERSONS + "&date=" + dateForUri);
+        log.info("Retrieving from url " + uri.toString());
         HttpRequest httpRequest = HttpRequest.newBuilder(uri).GET().build();
         HttpResponse<String> response = this.httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         try {
             return Optional.of(objectMapper.readValue(response.body(), BlocksPage.class));
         } catch (JsonProcessingException e) {
             //Unable to process response
+            log.warn("Unable to log response");
             return Optional.empty();
         }
     }
