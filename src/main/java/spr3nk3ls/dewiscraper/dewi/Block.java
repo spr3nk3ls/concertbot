@@ -7,4 +7,7 @@ public class Block {
     private String start;
     private String end;
     private String status;
+    private int capacity;
+    private boolean entire_day;
+    private String[] resources;
 }
