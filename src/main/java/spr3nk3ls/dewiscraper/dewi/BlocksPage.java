@@ -8,5 +8,5 @@ import java.util.List;
 public class BlocksPage {
     private List<Block> blocks;
     private String status;
-    private int max_left;
+    private String date;
 }

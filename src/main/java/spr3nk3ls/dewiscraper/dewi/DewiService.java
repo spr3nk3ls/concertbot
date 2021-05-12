@@ -63,8 +63,7 @@ public class DewiService {
     }
 
     private List<Beschikbaarheid> getBeschikbaarheids(LocalDate localDate, BlocksPage blocksPagePage) {
-        int maxLeft = blocksPagePage.getMax_left();
-        return blocksPagePage.getBlocks().stream().map(block -> toBeschikbaarheid(maxLeft, localDate, block)).collect(Collectors.toList());
+        return blocksPagePage.getBlocks().stream().map(block -> toBeschikbaarheid(localDate, block)).collect(Collectors.toList());
     }
 
     private Optional<BlocksPage> getDewiPageForDate(LocalDate localDate) throws IOException, InterruptedException {
@@ -82,23 +81,20 @@ public class DewiService {
         }
     }
 
-    private Beschikbaarheid toBeschikbaarheid(int maxLeft, LocalDate localDate, Block block) {
+    private Beschikbaarheid toBeschikbaarheid(LocalDate localDate, Block block) {
         LocalDateTime startTijd = LocalDateTime.of(localDate, LocalTime.parse(block.getStart()));
         LocalDateTime eindTijd = LocalDateTime.of(localDate, LocalTime.parse(block.getEnd()));
         return Beschikbaarheid.builder()
                 .minBeschikbaar(block.getStatus().equals("free") ? GLOBAL_MAX_20 : 0)
-                .maxBeschikbaar(getMaxBeschikbaar(maxLeft, block.getStatus()))
+                .maxBeschikbaar(getMaxBeschikbaar(block.getStatus()))
                 .tijdsblok(Tijdsblok.builder().starttijd(startTijd).eindtijd(eindTijd).build())
                 .build();
     }
 
-    private int getMaxBeschikbaar(int maxLeft, String status) {
+    private int getMaxBeschikbaar(String status) {
         if(status.equals("full")){
             return 0;
         }
-        if(status.equals("partial")){
-            return Math.min(maxLeft, GLOBAL_MAX_20);
-        }
-        return maxLeft;
+        return GLOBAL_MAX_20;
     }
 }
