@@ -58,6 +58,7 @@ public class DewiService {
             Optional<BlocksPage> blocksPagePage = getDewiPageForDate(localDate);
             return blocksPagePage.map(page -> getBeschikbaarheids(localDate, page)).orElse(List.of());
         } catch (IOException | InterruptedException e) {
+            log.warn("Unable to connect. ", e);
             throw new RuntimeException(e);
         }
     }
@@ -76,7 +77,7 @@ public class DewiService {
             return Optional.of(objectMapper.readValue(response.body(), BlocksPage.class));
         } catch (JsonProcessingException e) {
             //Unable to process response
-            log.warn("Unable to log response");
+            log.warn("Unable to log response", e);
             return Optional.empty();
         }
     }
