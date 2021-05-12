@@ -26,8 +26,9 @@ import java.util.stream.Stream;
 @ApplicationScoped
 public class DewiService {
 
-    private static final String DEWI_URL = "https://gripnijmegen.dewi-online.nl/iframe/reservations/156/opening-hours/1570/1014312";
+    private static final String DEWI_URL = "https://gripnijmegen.dewi-online.nl/iframe/club/156/reservations/activity/1570/time";
     private static final String AREA = "areas%5B%5D=803";
+    private static final String PERSONS = "persons=1";
     private static final int GLOBAL_MAX = 30;
     private static final int GLOBAL_MAX_20 = GLOBAL_MAX * 2 / 10;
 
@@ -66,7 +67,7 @@ public class DewiService {
 
     private Optional<BlocksPage> getDewiPageForDate(LocalDate localDate) throws IOException, InterruptedException {
         String dateForUri = localDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-        URI uri = URI.create(DEWI_URL + "?" + AREA + "&date=" + dateForUri);
+        URI uri = URI.create(DEWI_URL + "?" + AREA + "&" + PERSONS + "&date=" + dateForUri);
         HttpRequest httpRequest = HttpRequest.newBuilder(uri).GET().build();
         HttpResponse<String> response = this.httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         try {
