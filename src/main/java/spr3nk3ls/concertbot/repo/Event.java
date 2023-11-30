@@ -1,20 +1,23 @@
-package spr3nk3ls.concertbot.concert;
+package spr3nk3ls.concertbot.repo;
 
-import lombok.Data;
-import lombok.ToString;
+import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import jakarta.persistence.Entity;
+import lombok.*;
 
-import java.time.ZonedDateTime;
-import java.util.Calendar;
-import java.util.List;
+import java.time.LocalDateTime;
 
-@Data
 @ToString
-public class Concert {
-    private final String eventName;
-    //TODO
-    private final Calendar venueStart;
-    private final Calendar eventStart;
-    private final List<String> artists;
-    private final String venue;
-    private final String organizer;
+@Entity
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+public class Event extends PanacheEntity {
+    private String uri;
+    private String eventName;
+    private LocalDateTime venueStart;
+    private LocalDateTime eventStart;
+    private String artists;
+    private String venue;
+    private String organizer;
+    private String special;
 }
