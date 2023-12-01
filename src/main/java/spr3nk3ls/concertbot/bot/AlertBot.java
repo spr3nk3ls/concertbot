@@ -107,7 +107,9 @@ public class AlertBot {
                 sendMessage(id, queryables);
             } else {
                 var answer = handler.handle(text);
-                sendMessage(id, format(answer));
+                if(answer.size() > 0)
+                    sendMessage(id, format(answer));
+                sendMessage(id, "No events found");
             }
         }
 
