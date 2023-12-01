@@ -33,7 +33,7 @@ public class ScrapeService {
         this.alertBot = alertBot;
     }
 
-    @Scheduled(every = "60s")
+    @Scheduled(every = "600s")
     public void sendUpdates(){
         purgePastEvents();
         for(var scraper : scrapers){
