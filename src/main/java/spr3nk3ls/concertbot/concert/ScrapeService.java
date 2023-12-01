@@ -10,6 +10,7 @@ import spr3nk3ls.concertbot.repo.Event;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,25 +34,31 @@ public class ScrapeService {
     }
 
     @Scheduled(every = "60s")
-    @Transactional
     public void sendUpdates(){
         purgePastEvents();
         for(var scraper : scrapers){
             log.info("Start scraping " + scraper.getWebsite());
             var scraped = scraper.scrape(getKnownUris());
-            scraped.forEach(event -> event.persist());
+            persist(scraped);
             alertBot.sendUpdatedEvents(scraped);
             alertBot.updateQueries();
             log.info(String.format("%s new events found.", scraped.size()));
         }
     }
 
-    private static Set<String> getKnownUris(){
+    @Transactional
+    public void persist(Collection<Event> events){
+        events.forEach(event -> event.persist());
+    }
+
+    @Transactional
+    public Set<String> getKnownUris(){
         Stream<Event> events = Event.streamAll();
         return events.map(Event::getUri).collect(Collectors.toSet());
     }
 
-    private void purgePastEvents() {
+    @Transactional
+    public void purgePastEvents() {
         Event.delete("eventStart < ?1", LocalDateTime.now().with(LocalTime.MIN));
     }
 }
