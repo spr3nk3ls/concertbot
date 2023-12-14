@@ -33,17 +33,24 @@ public class ScrapeService {
         this.alertBot = alertBot;
     }
 
-    @Scheduled(every = "600s")
+    @Scheduled(every = "30s")
     public void sendUpdates(){
         purgePastEvents();
         for(var scraper : scrapers){
             log.info("Start scraping " + scraper.getWebsite());
             var scraped = scraper.scrape(getKnownUris());
+            scraped = skipPastEvents(scraped);
             persist(scraped);
             alertBot.sendUpdatedEvents(scraped);
             alertBot.updateQueries();
             log.info(String.format("%s new events found.", scraped.size()));
         }
+    }
+
+    private static Set<Event> skipPastEvents(Set<Event> scraped) {
+        return scraped.stream()
+            .filter(s -> s.getEventStart().isBefore(LocalDateTime.now().with(LocalTime.MIN)))
+            .collect(Collectors.toSet());
     }
 
     @Transactional
