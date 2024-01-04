@@ -33,7 +33,7 @@ public class ScrapeService {
         this.alertBot = alertBot;
     }
 
-    @Scheduled(every = "30s")
+    @Scheduled(every = "{bot.schedule}")
     public void sendUpdates(){
         purgePastEvents();
         for(var scraper : scrapers){
@@ -49,7 +49,7 @@ public class ScrapeService {
 
     private static Set<Event> skipPastEvents(Set<Event> scraped) {
         return scraped.stream()
-            .filter(s -> s.getEventStart().isBefore(LocalDateTime.now().with(LocalTime.MIN)))
+            .filter(s -> s.getEventStart().isAfter(LocalDateTime.now().with(LocalTime.MIN)))
             .collect(Collectors.toSet());
     }
 
