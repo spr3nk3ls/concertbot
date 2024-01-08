@@ -87,7 +87,7 @@ public class RoosjeScraper implements Scraper {
         var venueStartTime = eventDataMap.get(key);
         if (venueStartTime != null) {
             var venueStartTimeArray = venueStartTime.split("[: ]");
-            return venueStart.plusHours(Integer.parseInt(venueStartTimeArray[0])).plusMinutes(Integer.parseInt(venueStartTimeArray[1]));
+            return venueStart.withHour(Integer.parseInt(venueStartTimeArray[0])).withMinute(Integer.parseInt(venueStartTimeArray[1]));
         }
         return venueStart;
     }
